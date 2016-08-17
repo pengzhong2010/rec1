@@ -20,8 +20,9 @@ class Index(tornado.web.RequestHandler):
         itemid_extractor = ItemIDExtractor()
         retcode, itemid = itemid_extractor.extract("datagrnddoc",
                                                    "http://www.datagrand.com/blog/smg-the-next-unicorn.html")
-
-        body='itemid='+itemid+',retcode='+retcode
+        print retcode
+        print itemid
+        body='ddd'
         self.write("""
     <div style="text-align: center">
         %s
