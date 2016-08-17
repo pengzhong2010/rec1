@@ -6,10 +6,12 @@ import tornado.httpclient
 import tornado.gen
 
 from api import Recommend
+from api import Test
 
 class Router(tornado.web.Application):
     handlers=[
-            (r"/", Recommend.Index)
+            (r"/recommand", Recommend.Index),
+            (r"/test", Test.Index),
         ]
     settings = {
         # 'template_path': 'templates',
