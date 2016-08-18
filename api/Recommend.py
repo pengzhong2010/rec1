@@ -50,6 +50,8 @@ class Index(tornado.web.RequestHandler):
 
     #     # body = json.loads(response.body)
     #     body=response.body
+        self.write(response.body)
+        self.finish()
 
         rec_str=response.body
         rec_dict = json.loads(rec_str)
