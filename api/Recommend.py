@@ -15,8 +15,8 @@ sys.path.append(os.path.expanduser('/data/dev/pyspider'))
 from util import ItemIDExtractor
 
 class Index(tornado.web.RequestHandler):
-    # @tornado.web.asynchronous
-    # @tornado.gen.engine
+    @tornado.web.asynchronous
+    @tornado.gen.engine
     def get(self):
         # appname = self.get_argument('appname')
         # appid = self.get_argument('appid')
