@@ -11,10 +11,10 @@ import urllib
 import json
 import datetime
 import time
-# import sys
-# import os
-# sys.path.append(os.path.expanduser('/data/dev/pyspider'))
-# from util import ItemIDExtractor
+import sys
+import os
+sys.path.append(os.path.expanduser('/data/dev/pyspider'))
+from util import ItemIDExtractor
 
 class Index(tornado.web.RequestHandler):
 
@@ -42,7 +42,7 @@ class Index(tornado.web.RequestHandler):
             self.write("url not exists")
             self.finish()
 
-        rec_get_query_url=self.rec_url+'?itemid='+itemid+'&cnt='+cnt
+        rec_get_query_url=self.rec_url+'?itemid='+itemid+'&cnt='+str(cnt)
 
         client = tornado.httpclient.AsyncHTTPClient()
         response = yield tornado.gen.Task(client.fetch,
