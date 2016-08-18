@@ -14,6 +14,11 @@ import os
 sys.path.append(os.path.expanduser('/data/dev/pyspider'))
 from util import ItemIDExtractor
 
+from rec_driver import *
+# from pyredis import RedisKv
+
+from pymysql import PyMysql
+
 class Index(tornado.web.RequestHandler):
 
     def get(self):
