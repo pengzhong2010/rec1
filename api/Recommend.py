@@ -15,21 +15,22 @@ sys.path.append(os.path.expanduser('/data/dev/pyspider'))
 from util import ItemIDExtractor
 
 class Index(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
-    @tornado.gen.engine
+    # @tornado.web.asynchronous
+    # @tornado.gen.engine
     def get(self):
-        appname = self.get_argument('appname')
-        appid = self.get_argument('appid')
-        data_url = self.get_argument('url')
+        # appname = self.get_argument('appname')
+        # appid = self.get_argument('appid')
+        # data_url = self.get_argument('url')
 
         #get itemid
         itemid_extractor = ItemIDExtractor()
         retcode, itemid = itemid_extractor.extract("datagrnddoc",
                                                    "http://www.datagrand.com/blog/smg-the-next-unicorn.html")
-
-        if retcode:
-            self.set_status(500)
-            self.write("123xx")
+        print retcode
+        print itemid
+        # if retcode:
+        #     self.set_status(500)
+        #     self.write("123xx")
 
     #     client = tornado.httpclient.AsyncHTTPClient()
     #     response = yield tornado.gen.Task(client.fetch,
