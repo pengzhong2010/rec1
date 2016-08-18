@@ -15,9 +15,11 @@ sys.path.append(os.path.expanduser('/data/dev/pyspider'))
 from util import ItemIDExtractor
 
 class Index(tornado.web.RequestHandler):
+
+    rec_url = 'http://recapi.datagrand.com/relate/datagranddoc'
+
     @tornado.web.asynchronous
     @tornado.gen.engine
-    rec_url='http://recapi.datagrand.com/relate/datagranddoc'
     def get(self):
         pass
         # appname = self.get_argument('appname')
