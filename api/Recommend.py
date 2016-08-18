@@ -18,25 +18,25 @@ class Index(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
+        pass
         # appname = self.get_argument('appname')
         # appid = self.get_argument('appid')
         # data_url = self.get_argument('url')
 
-        #get itemid
+        # #get itemid
         itemid_extractor = ItemIDExtractor()
         retcode, itemid = itemid_extractor.extract("datagrnddoc",
-                                                   "http://www.datagrand.com/blog/smg-the-next-unicorn.html")
+                                                   "http://www.datagrand.com/blog/datagrande-query-2.html")
         print retcode
         print itemid
-        self.set_status(500)
         self.finish()
-        self.write("123xx")
-        
         # if retcode:
         #     self.set_status(500)
-        #
+        #     self.write("itemid not exists")
         #     self.finish()
-        #     self.write("123xx")
+
+
+
 
     #     client = tornado.httpclient.AsyncHTTPClient()
     #     response = yield tornado.gen.Task(client.fetch,
