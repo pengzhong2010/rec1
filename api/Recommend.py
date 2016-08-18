@@ -48,33 +48,31 @@ class Index(tornado.web.RequestHandler):
         response = yield tornado.gen.Task(client.fetch,
                                           rec_get_query_url )
 
-    #     # body = json.loads(response.body)
-    #     body=response.body
-        self.write(response.body)
-        self.finish()
+    #     self.write(response.body)
+    #     self.finish()
 
-        # rec_str=response.body
-        # rec_dict = json.loads(rec_str)
-        # rec_status = rec_dict.get('status')
-        # if not rec_status:
-        #     self.write("rec faild")
-        #     self.finish()
-        # if rec_status == 'FAIL':
-        #     self.write("rec status FAIL")
-        #     self.finish()
-        # rec_recdata = rec_dict.get('recdata')
-        # if not rec_recdata:
-        #     self.write("rec data not exist")
-        #     self.finish()
-        # if len(rec_recdata)==0:
-        #     self.write("rec data not exist")
-        #     self.finish()
-        # rec_items_list=[]
-        # for i in rec_recdata:
-        #     rec_items_list.append(i['itemid'])
-        #
-        # self.write(rec_items_list)
-        # self.finish()
+        rec_str=response.body
+        rec_dict = json.loads(rec_str)
+        rec_status = rec_dict.get('status')
+        if not rec_status:
+            self.write("rec faild")
+            self.finish()
+        if rec_status == 'FAIL':
+            self.write("rec status FAIL")
+            self.finish()
+        rec_recdata = rec_dict.get('recdata')
+        if not rec_recdata:
+            self.write("rec data not exist")
+            self.finish()
+        if len(rec_recdata)==0:
+            self.write("rec data not exist")
+            self.finish()
+        rec_items_list=[]
+        for i in rec_recdata:
+            rec_items_list.append(i['itemid'])
+
+        self.write(rec_items_list)
+        self.finish()
 
 
 
