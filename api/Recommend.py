@@ -28,6 +28,7 @@ class Index(tornado.web.RequestHandler):
                                                    "http://www.datagrand.com/blog/smg-the-next-unicorn.html")
         print retcode
         print itemid
+        self.finish()
         # if retcode:
         #     self.set_status(500)
         #     self.write("123xx")
