@@ -29,10 +29,13 @@ class Index(tornado.web.RequestHandler):
         print retcode
         print itemid
         self.set_status(500)
-        self.write("123xx")
         self.finish()
+        self.write("123xx")
+        
         # if retcode:
         #     self.set_status(500)
+        #
+        #     self.finish()
         #     self.write("123xx")
 
     #     client = tornado.httpclient.AsyncHTTPClient()
