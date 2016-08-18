@@ -17,6 +17,7 @@ from util import ItemIDExtractor
 class Index(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
+    rec_url='http://recapi.datagrand.com/relate/datagranddoc'
     def get(self):
         pass
         # appname = self.get_argument('appname')
@@ -27,24 +28,21 @@ class Index(tornado.web.RequestHandler):
         itemid_extractor = ItemIDExtractor()
         retcode, itemid = itemid_extractor.extract("datagrnddoc",
                                                    "http://www.datagrand.com/blog/datagrande-query-2.html")
-        print retcode
-        print itemid
-        self.finish()
-        # if retcode:
-        #     self.set_status(500)
-        #     self.write("itemid not exists")
-        #     self.finish()
+        # print retcode
+        # print itemid
+        # self.finish()
+        if retcode:
+            self.set_status(500)
+            self.write("url not exists")
+            self.finish()
 
+        rec_get_query_url=self.rec_url+'?itemid='+itemid
 
+        client = tornado.httpclient.AsyncHTTPClient()
+        response = yield tornado.gen.Task(client.fetch,
+                                          rec_get_query_url )
 
-
-    #     client = tornado.httpclient.AsyncHTTPClient()
-    #     response = yield tornado.gen.Task(client.fetch,
-    #                                       "http://127.0.0.1/5.php" )
     #     # body = json.loads(response.body)
     #     body=response.body
-    #     self.write("""
-    # <div style="text-align: center">
-    #     %s
-    # </div>""" % (body))
-    #     self.finish()
+        self.write(response.body)
+        self.finish()
