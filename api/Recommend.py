@@ -102,6 +102,10 @@ class Index(tornado.web.RequestHandler):
         ret = mysql_con.select(sql)
         if ret:
             for i in ret:
+                tmp = i.get("other_info")
+                if tmp:
+                    tmp2 = json.loads(tmp)
+                    i['other_info'] = tmp2
                 tmp=i.get("last_update_time")
                 if tmp:
                     tmp2=tmp.strftime("%Y-%m-%d %H:%M:%S")
