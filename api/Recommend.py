@@ -23,7 +23,7 @@ from lib.pymysql import PyMysql
 
 class Index(tornado.web.RequestHandler):
 
-    rec_url = 'http://recapi.datagrand.com/relate/datagranddoc'
+    rec_url = 'http://recapi.datagrand.com/relate/'
 
     @tornado.web.asynchronous
     @tornado.gen.engine
@@ -33,12 +33,14 @@ class Index(tornado.web.RequestHandler):
         appid = self.get_argument('appid')
         data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
+
+
         # cnt=10
 
         #get itemid
         itemid_extractor = ItemIDExtractor()
-        retcode, itemid = itemid_extractor.extract("datagrnddoc",
-                                                   "http://www.datagrand.com/blog/datagrande-query-2.html")
+        retcode, itemid = itemid_extractor.extract(appname,
+                                                   data_url)
         # print retcode
         # print itemid
         # self.finish()
@@ -48,7 +50,7 @@ class Index(tornado.web.RequestHandler):
             self.write(json.dumps(res))
             self.finish()
 
-        rec_get_query_url=self.rec_url+'?itemid='+itemid+'&cnt='+str(cnt)
+        rec_get_query_url=self.rec_url+str(appname)+'?itemid='+itemid+'&cnt='+str(cnt)
 
         client = tornado.httpclient.AsyncHTTPClient()
         response = yield tornado.gen.Task(client.fetch,
