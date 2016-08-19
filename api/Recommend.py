@@ -93,7 +93,7 @@ class Index(tornado.web.RequestHandler):
             db_select_items_list.append(i)
         db_select_items_str="','".join(db_select_items_list)
         mysql_con = PyMysql("rr-2zeq53lf7562ks1ko.mysql.rds.aliyuncs.com", 3306, "siterec", "siterec123456", "siterec_datacenter")
-        sql = " select * from item_info where appid=%s and itemid in ('%s') " % (int(appid),db_select_items_str)
+        sql = " select * from item_info where  itemid in ('%s') " % db_select_items_str
         ret = mysql_con.select(sql)
         if ret:
             for i in ret:
