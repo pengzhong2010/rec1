@@ -43,6 +43,7 @@ class Index(tornado.web.RequestHandler):
 
         #url cache
         data_url_md5=self.cache_key_build(appname+appid+data_url, 'url')
+        print data_url_md5
         res_json = CACHE.instance().get_local(data_url_md5)
         if res_json:
             self.write(res_json)
