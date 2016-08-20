@@ -11,7 +11,7 @@ import math
 import json
 import random
 import string
-# import redis
+import redis
 import urllib
 import urllib2
 import traceback

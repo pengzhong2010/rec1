@@ -13,13 +13,13 @@ import datetime
 import time
 import sys
 import os
+import hashlib
+import types
 sys.path.append(os.path.expanduser('/data/dev/pyspider'))
 from util import ItemIDExtractor
 
-from lib.rec_driver import *
-# from pyredis import RedisKv
-
-from lib.pymysql import PyMysql
+from lib.cache import CACHE
+from db.datacenter import DBCENTERREAD
 
 class Index(tornado.web.RequestHandler):
 
@@ -28,6 +28,8 @@ class Index(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+
         # pass
         appname = self.get_argument('appname')
         appid = self.get_argument('appid')
@@ -35,9 +37,18 @@ class Index(tornado.web.RequestHandler):
         cnt = self.get_argument('cnt')
 
         # appname='datagranddoc'
-        # appid=1666500
+        # appid='1666500'
         # data_url='http://www.datagrand.com/blog/datagrande-query-2.html'
         # cnt=10
+
+        #url cache
+        data_url_md5=self.cache_key_build(appname+appid+data_url, 'url')
+        res_json = CACHE.instance().get_local(data_url_md5)
+        if res_json:
+            self.write(res_json)
+            self.finish()
+            return
+
 
         #get itemid
         itemid_extractor = ItemIDExtractor()
@@ -49,9 +60,11 @@ class Index(tornado.web.RequestHandler):
         if retcode:
         #66
             res = self.res_formate_dict("FAIL", [], '66')
-            self.set_header("Access-Control-Allow-Origin", "*")
-            self.write(json.dumps(res))
+            res_json = json.dumps(res)
+            CACHE.instance().set(data_url_md5, res_json, 7200)
+            self.write(res_json)
             self.finish()
+            return
 
         rec_get_query_url=self.rec_url+str(appname)+'?itemid='+itemid+'&cnt='+str(cnt)
 
@@ -70,8 +83,9 @@ class Index(tornado.web.RequestHandler):
         if (not rec_status) or (rec_status == 'FAIL'):
             #67
             res = self.res_formate_dict("FAIL", [], '67')
-            self.set_header("Access-Control-Allow-Origin", "*")
-            self.write(json.dumps(res))
+            res_json = json.dumps(res)
+            CACHE.instance().set(data_url_md5, res_json, 7200)
+            self.write(res_json)
             self.finish()
             return
 
@@ -80,10 +94,12 @@ class Index(tornado.web.RequestHandler):
         if (not rec_recdata) or (len(rec_recdata)==0):
             #68
             res = self.res_formate_dict("FAIL", [], '68')
-            self.set_header("Access-Control-Allow-Origin", "*")
-            self.write(json.dumps(res))
+            res_json = json.dumps(res)
+            CACHE.instance().set(data_url_md5, res_json, 7200)
+            self.write(res_json)
             self.finish()
             return
+
 
         rec_items_list=[]
         for i in rec_recdata:
@@ -94,35 +110,46 @@ class Index(tornado.web.RequestHandler):
         db_select_items_list=[]
         #cache
         for i in rec_items_list:
-            rec_items_dict[i]=''
-            db_select_items_list.append(i)
-        db_select_items_str="','".join(db_select_items_list)
-        mysql_con = PyMysql("rr-2zeq53lf7562ks1ko.mysql.rds.aliyuncs.com", 3306, "siterec", "siterec123456", "siterec_datacenter")
-        sql = " select * from item_info where  itemid in ('%s') " % db_select_items_str
-        ret = mysql_con.select(sql)
-        if ret:
-            for i in ret:
-                tmp = i.get("other_info")
-                if tmp:
-                    tmp2 = json.loads(tmp)
-                    i['other_info'] = tmp2
-                tmp=i.get("last_update_time")
-                if tmp:
-                    tmp2=tmp.strftime("%Y-%m-%d %H:%M:%S")
-                    i['last_update_time']=tmp2
-                tmp = i.get("item_modify_time")
-                if tmp:
-                    tmp2 = tmp.strftime("%Y-%m-%d %H:%M:%S")
-                    i['item_modify_time'] = tmp2
-                tmp = i.get("create_time")
-                if tmp:
-                    tmp2 = tmp.strftime("%Y-%m-%d %H:%M:%S")
-                    i['create_time'] = tmp2
-                itemid_tmp = i.get("itemid")
-                if itemid_tmp:
-                    rec_items_dict[itemid_tmp]=i
-                    #cache
-                    pass
+            data_item_md5 = self.cache_key_build(i, 'item')
+            item_json = CACHE.instance().get_local(data_item_md5)
+            if item_json:
+                rec_items_dict[i] = json.loads(item_json)
+            else:
+                rec_items_dict[i]=''
+                db_select_items_list.append(i)
+        # print "db"
+        # print db_select_items_list
+        if db_select_items_list:
+            db_select_items_str="','".join(db_select_items_list)
+
+            sql = " select * from item_info where appid=%s and itemid in ('%s') " % (int(appid),db_select_items_str)
+            # print sql
+            ret = DBCENTERREAD.instance().select(sql)
+            if ret:
+                for i in ret:
+                    tmp = i.get("other_info")
+                    if tmp:
+                        tmp2 = json.loads(tmp)
+                        i['other_info'] = tmp2
+                    tmp=i.get("last_update_time")
+                    if tmp:
+                        tmp2=tmp.strftime("%Y-%m-%d %H:%M:%S")
+                        i['last_update_time']=tmp2
+                    tmp = i.get("item_modify_time")
+                    if tmp:
+                        tmp2 = tmp.strftime("%Y-%m-%d %H:%M:%S")
+                        i['item_modify_time'] = tmp2
+                    tmp = i.get("create_time")
+                    if tmp:
+                        tmp2 = tmp.strftime("%Y-%m-%d %H:%M:%S")
+                        i['create_time'] = tmp2
+                    itemid_tmp = i.get("itemid")
+                    if itemid_tmp:
+                        rec_items_dict[itemid_tmp]=i
+                        # cache
+                        data_item_md5 = self.cache_key_build(itemid_tmp, 'item')
+                        CACHE.instance().set(data_item_md5, json.dumps(i), 7200)
+
         res_list=[]
         for i in rec_items_list:
             if rec_items_dict[i]:
@@ -130,8 +157,9 @@ class Index(tornado.web.RequestHandler):
 
 
         res=self.res_formate_dict("OK",res_list)
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.write(json.dumps(res))
+        res_json = json.dumps(res)
+        CACHE.instance().set(data_url_md5, res_json, 7200)
+        self.write(res_json)
         self.finish()
         return
 
@@ -159,7 +187,25 @@ class Index(tornado.web.RequestHandler):
         else:
             return {}
 
+    def str_md5(self,str):
 
+        if type(str) is types.StringType:
+            m = hashlib.md5()
+            m.update(str)
+            return m.hexdigest()
+        else:
+            return ''
+
+    def cache_key_build(self,str,type):
+        item_key=''
+        if type=='item':
+            item_key = 'ITEM' + str
+        elif type=='url':
+            item_key=self.str_md5(str)
+            if item_key:
+                item_key='SURL'+item_key
+
+        return item_key
 
 
 
