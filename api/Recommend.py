@@ -217,7 +217,6 @@ class Personalized(tornado.web.RequestHandler):
         cnt = self.get_argument('cnt')
 
         cookie = self.request.headers.get('Cookie')
-        print cookie
         if not cookie:
             res = self.res_formate_dict("FAIL", [], '69')
             self.res_write(res)
