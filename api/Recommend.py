@@ -268,7 +268,13 @@ class Personalized(tornado.web.RequestHandler):
 
             return res_dict
         elif status == 'OK':
-            res_dict['rec_data'] = json.loads(res_list)
+            rec_data = json.loads(res_list)
+            rec_data_personal = rec_data.get("recdata")
+            if rec_data_personal:
+                res_dict['rec_data'] = rec_data_personal
+            rec_data_requireid = rec_data.get("request_id")
+            if rec_data_requireid:
+                res_dict['request_id'] = rec_data_requireid
             return res_dict
         else:
             return {}
