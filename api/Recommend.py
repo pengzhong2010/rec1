@@ -20,6 +20,7 @@ from util import ItemIDExtractor
 
 from lib.cache import CACHE
 from db.datacenter import DBCENTERREAD
+from lib.log import LOG
 
 class Index(tornado.web.RequestHandler):
 
@@ -36,11 +37,14 @@ class Index(tornado.web.RequestHandler):
         data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
 
-
         #url cache
-        data_url_md5=self.cache_key_build(str(appname+appid+data_url), 'url')
+        data_url_md5=self.cache_key_build(str(appname+appid+data_url+cnt), 'url')
         res_json = CACHE.instance().get_local(data_url_md5)
         if res_json:
+            request_path = self.request.path
+            request_query = self.request.query
+            log_str = ' path:' + str(request_path) + ' query:' + str(request_query) + ' res:' + str(res_json)
+            LOG.ilog(log_str)
             self.write(res_json)
             self.finish()
             return
@@ -56,10 +60,7 @@ class Index(tornado.web.RequestHandler):
         if retcode:
         #66
             res = self.res_formate_dict("FAIL", [], '66')
-            res_json = json.dumps(res)
-            CACHE.instance().set(data_url_md5, res_json, 7200)
-            self.write(res_json)
-            self.finish()
+            self.res_write(res, data_url_md5)
             return
 
         rec_get_query_url=self.rec_url+str(appname)+'?itemid='+itemid+'&cnt='+str(cnt)
@@ -79,10 +80,7 @@ class Index(tornado.web.RequestHandler):
         if (not rec_status) or (rec_status == 'FAIL'):
             #67
             res = self.res_formate_dict("FAIL", [], '67')
-            res_json = json.dumps(res)
-            CACHE.instance().set(data_url_md5, res_json, 7200)
-            self.write(res_json)
-            self.finish()
+            self.res_write(res, data_url_md5)
             return
 
         rec_recdata = rec_dict.get('recdata')
@@ -90,10 +88,7 @@ class Index(tornado.web.RequestHandler):
         if (not rec_recdata) or (len(rec_recdata)==0):
             #68
             res = self.res_formate_dict("FAIL", [], '68')
-            res_json = json.dumps(res)
-            CACHE.instance().set(data_url_md5, res_json, 7200)
-            self.write(res_json)
-            self.finish()
+            self.res_write(res, data_url_md5)
             return
 
 
@@ -153,11 +148,9 @@ class Index(tornado.web.RequestHandler):
 
 
         res=self.res_formate_dict("OK",res_list)
-        res_json = json.dumps(res)
-        CACHE.instance().set(data_url_md5, res_json, 7200)
-        self.write(res_json)
-        self.finish()
+        self.res_write(res,data_url_md5)
         return
+
 
 
     def res_formate_dict(self,status,res_list=None,code=None):
@@ -203,8 +196,28 @@ class Index(tornado.web.RequestHandler):
 
         return item_key
 
+    def res_write(self,res,data_url_md5):
+        res_json = json.dumps(res)
+        CACHE.instance().set(data_url_md5, res_json, 7200)
+        #log
+        request_path=self.request.path
+        request_query = self.request.query
+        log_str=' path:'+str(request_path)+' query:'+str(request_query)+' res:'+str(res_json)
+        LOG.ilog(log_str)
+        self.write(res_json)
+        self.finish()
 
 
+class Personalized(tornado.web.RequestHandler):
+
+    def get(self):
+        pass
+        # data_cookie = self.request.cookies
+        # data_cookie_str = str(data_cookie)
+        # print type(data_cookie_str)
+        # print data_cookie_str
+        # self.write(data_cookie_str)
+        return
 
 
 

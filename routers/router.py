@@ -11,6 +11,7 @@ from api import Test
 class Router(tornado.web.Application):
     handlers=[
             (r"/recommand", Recommend.Index),
+            (r"/personalized", Recommend.Personalized),
             (r"/test", Test.Index),
         ]
     settings = {
