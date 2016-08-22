@@ -223,15 +223,7 @@ class Personalized(tornado.web.RequestHandler):
             self.res_write(res)
             return
 
-        origin = self.request.headers.get('Origin')
-        if origin:
-            self.set_header("Access-Control-Allow-Origin", origin)
-        else:
-            self.set_header("Access-Control-Allow-Origin", "*")
-
-        self.set_header("Access-Control-Allow-Credentials", 'true')
-        self.set_header("Access-Control-Allow-Methods", "GET")
-        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+        self.set_header_orgin()
 
         cookie=str(cookie)
         cid=urllib.quote(cookie)
@@ -280,4 +272,16 @@ class Personalized(tornado.web.RequestHandler):
         LOG.ilog(log_str)
         self.write(res_json)
         self.finish()
+
+
+    def set_header_orgin(self):
+        origin = self.request.headers.get('Origin')
+        if origin:
+            self.set_header("Access-Control-Allow-Origin", origin)
+        else:
+            self.set_header("Access-Control-Allow-Origin", "*")
+
+        self.set_header("Access-Control-Allow-Credentials", 'true')
+        self.set_header("Access-Control-Allow-Methods", "GET")
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
 
