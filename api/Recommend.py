@@ -223,7 +223,11 @@ class Personalized(tornado.web.RequestHandler):
             self.res_write(res)
             return
 
-        self.set_header("Access-Control-Allow-Origin", "*")
+        origin = self.request.headers.get('Origin')
+        if origin:
+            self.set_header("Access-Control-Allow-Origin", origin)
+        else:
+            self.set_header("Access-Control-Allow-Origin", "*")
 
         cookie=str(cookie)
         cid=urllib.quote(cookie)
