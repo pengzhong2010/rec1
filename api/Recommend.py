@@ -229,6 +229,10 @@ class Personalized(tornado.web.RequestHandler):
         else:
             self.set_header("Access-Control-Allow-Origin", "*")
 
+        self.set_header("Access-Control-Allow-Credentials", True)
+        self.set_header("Access-Control-Allow-Methods", "GET")
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
         cookie=str(cookie)
         cid=urllib.quote(cookie)
         rec_get_query_url=self.rec_url+str(appname)+'?cnt='+str(cnt)+'&cid='+cid
