@@ -29,13 +29,15 @@ class Index(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
-        self.set_header("Access-Control-Allow-Origin", "*")
+
 
         # pass
         appname = self.get_argument('appname')
         appid = self.get_argument('appid')
         data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
+
+        self.set_header_orgin()
 
         #url cache
         data_url_md5=self.cache_key_build(str(appname+appid+data_url+cnt), 'url')
@@ -203,6 +205,17 @@ class Index(tornado.web.RequestHandler):
         LOG.ilog(log_str)
         self.write(res_json)
         self.finish()
+
+    def set_header_orgin(self):
+        origin = self.request.headers.get('Origin')
+        if origin:
+            self.set_header("Access-Control-Allow-Origin", origin)
+        else:
+            self.set_header("Access-Control-Allow-Origin", "*")
+
+        self.set_header("Access-Control-Allow-Credentials", 'true')
+        self.set_header("Access-Control-Allow-Methods", "GET")
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
 
 
 class Personalized(tornado.web.RequestHandler):
