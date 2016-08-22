@@ -10,9 +10,9 @@ from api import Test
 
 class Router(tornado.web.Application):
     handlers=[
-            (r"/recommand", Recommend.Index),
-            (r"/personalized", Recommend.Personalized),
-            (r"/test", Test.Index),
+            (r"/related", Recommend.Index),
+            (r"/related", Recommend.Personalized),
+            # (r"/test", Test.Index),
         ]
     settings = {
         # 'template_path': 'templates',
