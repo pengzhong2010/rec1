@@ -216,11 +216,14 @@ class Personalized(tornado.web.RequestHandler):
         appname = self.get_argument('appname')
         cnt = self.get_argument('cnt')
 
+
         cookie = self.request.headers.get('Cookie')
         if not cookie:
             res = self.res_formate_dict("FAIL", [], '69')
             self.res_write(res)
             return
+
+        self.set_header("Access-Control-Allow-Origin", "*")
 
         cookie=str(cookie)
         cid=urllib.quote(cookie)
