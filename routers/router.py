@@ -12,7 +12,7 @@ class Router(tornado.web.Application):
     handlers=[
             (r"/related", Recommend.Index),
             (r"/personal", Recommend.Personalized),
-            # (r"/test", Test.Index),
+            (r"/test", Test.Index),
         ]
     settings = {
         # 'template_path': 'templates',
