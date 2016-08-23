@@ -325,9 +325,9 @@ class Personalized(tornado.web.RequestHandler):
             db_select_items_str = "'"+db_select_items_str+"'"
 
             sql1 = " and itemid in (%s) " % db_select_items_str
-            sql = " select * from item_info where appid={0} "+ sql1
+            sql = " select * from item_info where appid=%s "+ sql1
             # print sql
-            ret = DBCENTERREAD.instance().select(sql,'many',([str(appid)]))
+            ret = DBCENTERREAD.instance().select(sql,'many',(str(appid),))
             print "db_select_items_str"
             print db_select_items_str
             print "ret"
