@@ -67,8 +67,7 @@ class PyMysql:
             else:
                 ret = self._cursor.fetchone()
         except (AttributeError, MySQLdb.OperationalError):
-            # ilog.error("mysql not connected,  host: %s, port: %d, user: %s, db: %s, sql: %s, err_msg: %s" %
-            #            (self._host, self._port, self._user, self._db, sql, traceback.format_exc().replace("\n", "")))
+            print "mysql not connected,  host: %s, port: %d, user: %s, db: %s, sql: %s, err_msg: %s" % (self._host, self._port, self._user, self._db, sql, traceback.format_exc().replace("\n", ""))
             time.sleep(self._internal)
             self.reconnect()
             if self._cursor is not None:
@@ -78,8 +77,7 @@ class PyMysql:
                 else:
                     ret = self._cursor.fetchone()
         except Exception as e:
-            # ilog.error("selecting error, host: %s, port: %d, user: %s, db: %s, sql: %s, err_msg: %s\t%s" %
-            #            (self._host, self._port, self._user, self._db, sql, str(e), traceback.format_exc().replace("\n", "")))
+            print"selecting error, host: %s, port: %d, user: %s, db: %s, sql: %s, err_msg: %s\t%s" % (self._host, self._port, self._user, self._db, sql, str(e), traceback.format_exc().replace("\n", ""))
             # if e.args[0] == 2006:
             #     self.reconnect()
             pass
