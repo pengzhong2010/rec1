@@ -235,8 +235,11 @@ class Personalized(tornado.web.RequestHandler):
     @tornado.gen.engine
     def get(self):
         # pass
+        self.set_header_orgin()
+
         appname = self.get_argument('appname')
         appid = self.get_argument('appid')
+        data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
 
         # header = self.request.headers
@@ -247,11 +250,19 @@ class Personalized(tornado.web.RequestHandler):
             self.res_write(res)
             return
         # print cookie
-        self.set_header_orgin()
+
+
+        # get itemid
+        itemid_extractor = ItemIDExtractor()
+        retcode, itemid = itemid_extractor.extract(appname,
+                                                   data_url)
+
+        if retcode or (not itemid):
+            itemid = ''
 
         cookie=str(cookie)
         cid=urllib.quote(cookie)
-        rec_get_query_url=self.rec_url+str(appname)+'?cnt='+str(cnt)+'&cid='+cid
+        rec_get_query_url=self.rec_url+str(appname)+'?cnt='+str(cnt)+'&cid='+cid+'&itemid='+itemid
         client = tornado.httpclient.AsyncHTTPClient()
         response = yield tornado.gen.Task(client.fetch,
                                           rec_get_query_url )
