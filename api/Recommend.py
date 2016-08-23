@@ -175,6 +175,7 @@ class Index(tornado.web.RequestHandler):
             sql = " select * from item_info where appid=%s " + sql1
             # print sql
             ret = DBCENTERREAD.instance().select(sql, 'many', (str(appid),))
+            print ret
             if ret:
                 for i in ret:
                     tmp = i.get("other_info")
