@@ -252,10 +252,12 @@ class Personalized(tornado.web.RequestHandler):
         cnt = self.get_argument('cnt')
 
         self.set_header_orgin()
-        
+
         # header = self.request.headers
         # print header
         cookie = self.get_cookie('datagrand_uid')
+        print "cookie"
+        print cookie
         if not cookie:
             #69
             res = res_formate_dict("FAIL", [], '69')
