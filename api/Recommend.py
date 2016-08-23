@@ -329,6 +329,10 @@ class Personalized(tornado.web.RequestHandler):
             sql = " select * from item_info where appid=%s "+ sql1
             # print sql
             ret = DBCENTERREAD.instance().select(sql,'many',(int(appid)))
+            print "db_select_items_str"
+            print db_select_items_str
+            print "ret"
+            print ret
             if ret:
                 for i in ret:
                     tmp = i.get("other_info")
