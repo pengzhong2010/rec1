@@ -18,6 +18,7 @@ import types
 sys.path.append(os.path.expanduser('/data/dev/pyspider'))
 from util import ItemIDExtractor
 
+from conf import config
 from lib.cache import CACHE
 from db.datacenter import DBCENTERREAD
 from lib.log import LOG
@@ -187,7 +188,7 @@ class Index(tornado.web.RequestHandler):
                         rec_items_dict[itemid_tmp]=i
                         # cache
                         data_item_md5 = cache_key_build(str(itemid_tmp), 'item')
-                        CACHE.instance().set(data_item_md5, json.dumps(i), 7200)
+                        CACHE.instance().set(data_item_md5, json.dumps(i), config.CACHE_TIME)
 
         res_list=[]
         for i in rec_items_list:
@@ -205,7 +206,7 @@ class Index(tornado.web.RequestHandler):
 
     def res_write(self,res,data_url_md5):
         res_json = json.dumps(res)
-        CACHE.instance().set(data_url_md5, res_json, 7200)
+        CACHE.instance().set(data_url_md5, res_json, config.CACHE_TIME)
         #log
         request_path=self.request.path
         request_query = self.request.query
@@ -322,7 +323,7 @@ class Personalized(tornado.web.RequestHandler):
                         rec_items_dict[itemid_tmp] = i
                         # cache
                         data_item_md5 = cache_key_build(str(itemid_tmp), 'item')
-                        CACHE.instance().set(data_item_md5, json.dumps(i), 7200)
+                        CACHE.instance().set(data_item_md5, json.dumps(i), config.CACHE_TIME)
 
         res_list = []
         for i in rec_items_list:
