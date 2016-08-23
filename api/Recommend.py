@@ -127,7 +127,7 @@ class Index(tornado.web.RequestHandler):
                                               rec_get_query_url )
 
             rec_str = response.body
-            print rec_str
+            # print rec_str
         else:
             rec_str = '{"status": "WARN", "errors": {"message": "cnt illegal ,set to 20", "code": -2}, "recdata": [{"itemid": "c41bc01aea03492d27890f09004c7737", "rsn": ""}, {"itemid": "04afd591a784d96080cfc987cd800050", "rsn": ""}], "request_id": "1471512949576753"}'
 
@@ -279,7 +279,7 @@ class Personalized(tornado.web.RequestHandler):
             response = yield tornado.gen.Task(client.fetch,
                                               rec_get_query_url )
             rec_str = response.body
-            print rec_str
+            # print rec_str
 
         else:
             rec_str = '{\"status\": \"OK\", \"recdata\": [{\"itemid\": \"05f7f3ebf5fb2bc0de08eaccb7e207bd\", \"rsn\": \"\"}, {\"itemid\": \"04afd591a784d96080cfc987cd800050\", \"rsn\": \"\"}, {\"itemid\": \"7136981f11b3215af37ba91db39f272b\", \"rsn\": \"\"}, {\"itemid\": \"19cc91d93461208963a909a29b89d7ee\", \"rsn\": \"\"}, {\"itemid\": \"19e92124f69676349cd6ff6210cd79b1\", \"rsn\": \"\"}, {\"itemid\": \"c5fb89c658e77d9d84805ee5ded7566d\", \"rsn\": \"\"}, {\"itemid\": \"2389cc0e43214306ba25ec1a64e814f8\", \"rsn\": \"\"}, {\"itemid\": \"4e1e894be752051a085da475148f9ac0\", \"rsn\": \"\"}, {\"itemid\": \"eeeac074b30d3afd3afcd01ee94cc9ff\", \"rsn\": \"\"}, {\"itemid\": \"d047c8e12241fc41ac26ad50bc954638\", \"rsn\": \"\"}], \"request_id\": \"1471916927781132\"}'
