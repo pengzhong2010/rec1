@@ -39,7 +39,7 @@ class Index(tornado.web.RequestHandler):
 
         itemids_str= "'207080','52','44','78'"
         sql1 = "and itemid in (%s)" % itemids_str
-        sql0 = " select * from item_info where appid=%s "+sql1
+        sql0 = " select * from item_info where appid={0} "+sql1
         # print sql
         ret = self.mysql_con.select(sql0,'many',('237389',))
         print ret
