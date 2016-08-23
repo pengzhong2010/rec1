@@ -87,14 +87,14 @@ class Index(tornado.web.RequestHandler):
     def get(self):
         # pass
 
-        self.set_header_orgin()
+
 
         appname = self.get_argument('appname')
         appid = self.get_argument('appid')
         data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
 
-
+        self.set_header_orgin()
 
         #url cache
         data_url_md5=cache_key_build(str(appname+appid+data_url+cnt), 'url')
@@ -244,13 +244,15 @@ class Personalized(tornado.web.RequestHandler):
     @tornado.gen.engine
     def get(self):
         # pass
-        self.set_header_orgin()
+
 
         appname = self.get_argument('appname')
         appid = self.get_argument('appid')
         data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
 
+        self.set_header_orgin()
+        
         # header = self.request.headers
         # print header
         cookie = self.get_cookie('datagrand_uid')
