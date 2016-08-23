@@ -127,7 +127,7 @@ class Index(tornado.web.RequestHandler):
                                               rec_get_query_url )
 
             rec_str = response.body
-            # print rec_str
+            print rec_str
         else:
             rec_str = '{"status": "WARN", "errors": {"message": "cnt illegal ,set to 20", "code": -2}, "recdata": [{"itemid": "c41bc01aea03492d27890f09004c7737", "rsn": ""}, {"itemid": "04afd591a784d96080cfc987cd800050", "rsn": ""}], "request_id": "1471512949576753"}'
 
@@ -152,7 +152,7 @@ class Index(tornado.web.RequestHandler):
         rec_items_list=[]
         for i in rec_recdata:
             rec_items_list.append(i['itemid'])
-
+        print rec_items_list
         #select db
         rec_items_dict={}
         db_select_items_list=[]
