@@ -7,6 +7,7 @@ from rec_driver import *
 class PyMysql:
 
     def __init__(self, host, port, user, passwd, db, charset="utf8", autocommit=False):
+        # print "connect create"
         self._cursor = None
         self._conn = None
         self._host = host
@@ -52,7 +53,7 @@ class PyMysql:
             # ilog.error("mysql reconnecting error, host: %s, port: %d, user: %s, db: %s, err_msg: %s\t%s" %
             #            (self._host, self._port, self._user, self._db, str(e), traceback.format_exc().replace("\n", "")))
 
-    def select(self, sql, mode="many"):
+    def select(self, sql, mode="many", args=None):
         ret = None
         try:
             if self._cursor is not None:
@@ -60,7 +61,7 @@ class PyMysql:
                 self._cursor = None
             self._cursor = self._conn.cursor(MySQLdb.cursors.DictCursor)
 
-            self._cursor.execute(sql)
+            self._cursor.execute(sql,args)
             if mode == "many":
                 ret = self._cursor.fetchall()
             else:

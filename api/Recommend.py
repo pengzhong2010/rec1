@@ -63,7 +63,9 @@ def str_md5(str):
 def cache_key_build(str, type):
     item_key = ''
     if type == 'item':
-        item_key = 'ITEM' + str
+        item_key = str_md5(str)
+        if item_key:
+            item_key = 'ITEM' + item_key
     elif type == 'url':
         item_key = str_md5(str)
         if item_key:
@@ -79,15 +81,16 @@ class Index(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
-
-
         # pass
+
+        self.set_header_orgin()
+
         appname = self.get_argument('appname')
         appid = self.get_argument('appid')
         data_url = self.get_argument('url')
         cnt = self.get_argument('cnt')
 
-        self.set_header_orgin()
+
 
         #url cache
         data_url_md5=cache_key_build(str(appname+appid+data_url+cnt), 'url')
@@ -108,7 +111,7 @@ class Index(tornado.web.RequestHandler):
                                                    data_url)
 
         if retcode:
-        #66
+            #66
             res = res_formate_dict("FAIL", [], '66')
             self.res_write(res, data_url_md5)
             return
@@ -151,7 +154,7 @@ class Index(tornado.web.RequestHandler):
         db_select_items_list=[]
         #cache
         for i in rec_items_list:
-            data_item_md5 = cache_key_build(str(i), 'item')
+            data_item_md5 = cache_key_build(str(appid) + str(i), 'item')
             item_json = CACHE.instance().get_local(data_item_md5)
             if item_json:
                 rec_items_dict[i] = json.loads(item_json)
@@ -159,12 +162,15 @@ class Index(tornado.web.RequestHandler):
                 rec_items_dict[i]=''
                 db_select_items_list.append(i)
 
-        if db_select_items_list:
-            db_select_items_str="','".join(db_select_items_list)
 
-            sql = " select * from item_info where appid=%s and itemid in ('%s') " % (int(appid),db_select_items_str)
+        if db_select_items_list:
+            db_select_items_str = "','".join(db_select_items_list)
+            db_select_items_str = "'" + db_select_items_str + "'"
+
+            sql1 = " and itemid in (%s) " % db_select_items_str
+            sql = " select * from item_info where appid=%s " + sql1
             # print sql
-            ret = DBCENTERREAD.instance().select(sql)
+            ret = DBCENTERREAD.instance().select(sql, 'many', (int(appid)))
             if ret:
                 for i in ret:
                     tmp = i.get("other_info")
@@ -187,7 +193,7 @@ class Index(tornado.web.RequestHandler):
                     if itemid_tmp:
                         rec_items_dict[itemid_tmp]=i
                         # cache
-                        data_item_md5 = cache_key_build(str(itemid_tmp), 'item')
+                        data_item_md5 = cache_key_build(str(appid)+str(itemid_tmp), 'item')
                         CACHE.instance().set(data_item_md5, json.dumps(i), config.CACHE_TIME)
 
         res_list=[]
@@ -246,6 +252,7 @@ class Personalized(tornado.web.RequestHandler):
         # print header
         cookie = self.get_cookie('datagrand_uid')
         if not cookie:
+            #69
             res = res_formate_dict("FAIL", [], '69')
             self.res_write(res)
             return
@@ -296,7 +303,7 @@ class Personalized(tornado.web.RequestHandler):
         db_select_items_list = []
         # cache
         for i in rec_items_list:
-            data_item_md5 = cache_key_build(str(i), 'item')
+            data_item_md5 = cache_key_build(str(appid) + str(i), 'item')
             item_json = CACHE.instance().get_local(data_item_md5)
             if item_json:
                 rec_items_dict[i] = json.loads(item_json)
@@ -306,11 +313,12 @@ class Personalized(tornado.web.RequestHandler):
 
         if db_select_items_list:
             db_select_items_str = "','".join(db_select_items_list)
+            db_select_items_str = "'"+db_select_items_str+"'"
 
-            sql = " select * from item_info where appid=%s and itemid in ('%s') " % (
-            int(appid), db_select_items_str)
+            sql1 = " and itemid in (%s) " % db_select_items_str
+            sql = " select * from item_info where appid=%s "+ sql1
             # print sql
-            ret = DBCENTERREAD.instance().select(sql)
+            ret = DBCENTERREAD.instance().select(sql,'many',(int(appid)))
             if ret:
                 for i in ret:
                     tmp = i.get("other_info")
@@ -333,7 +341,7 @@ class Personalized(tornado.web.RequestHandler):
                     if itemid_tmp:
                         rec_items_dict[itemid_tmp] = i
                         # cache
-                        data_item_md5 = cache_key_build(str(itemid_tmp), 'item')
+                        data_item_md5 = cache_key_build(str(appid) + str(itemid_tmp), 'item')
                         CACHE.instance().set(data_item_md5, json.dumps(i), config.CACHE_TIME)
 
         res_list = []
